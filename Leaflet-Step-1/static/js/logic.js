@@ -24,20 +24,25 @@ function markerSize(magnitude) {
 
 // Function to get color for the circle based on the depth
 function getColor(depth) {
-    switch (depth) {
-        case (depth > 90):
-            return '#800026';
-        case (depth > 70):
-            return '#BD0026';
-        case (depth > 50):
-            return '#E31A1C';
-        case (depth > 30):
-            return '#FC4E2A';
-        case (depth > 10):
-            return '#FD8D3C';
-        case (depth > -10):
-            return '#FEB24C';
+    if (depth > 90) {
+        return "red";
     }
+    else if (depth > 70) {
+        return "orange";
+    }
+    else if (depth > 50) {
+        return "yellow";
+    }
+    else if (depth > 30) {
+        return "green";
+    }
+    else if (depth > 10) {
+        return "blue";
+    }
+    else if (depth > -10) {
+        return "black";
+    }
+    else return "white";
 }
 
 d3.json(url).then(function(data) {
@@ -73,3 +78,24 @@ d3.json(url).then(function(data) {
     }
   
 });
+
+// Add the legend; code from from Leaflet documentation (https://leafletjs.com/examples/choropleth/)
+var legend = L.control({position: 'bottomright'});
+
+legend.onAdd = function (map) {
+
+    var div = L.DomUtil.create('div', 'info legend'),
+        grades = [-10, 10, 30, 50, 70, 90],
+        labels = [];
+
+    // loop through our density intervals and generate a label with a colored square for each interval
+    for (var i = 0; i < grades.length; i++) {
+        div.innerHTML +=
+            '<i style="background:' + getColor(grades[i] + 1) + '"></i> ' +
+            grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
+    }
+
+    return div;
+};
+
+legend.addTo(myMap);
